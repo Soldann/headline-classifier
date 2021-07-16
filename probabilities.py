@@ -1,6 +1,6 @@
 import csv
 from categories import *
-
+from preprocess import preprocess
 
 """
 Calculates probabilities of word given category using data in the provided training set.
@@ -10,6 +10,7 @@ def get_probabilities (csv_path, filter_stop_words, stem_words):
     p_category = {}
     total_count = 0
     words_per_category = {}
+    total_words = 0
 
     # Initialize values to 0
     for category in Category:
@@ -51,6 +52,7 @@ def get_probabilities (csv_path, filter_stop_words, stem_words):
                 # For each word, increment the total number of words present in headlines in the category
                 # and increment the number of appearances of the particular word in the category.
                 # If there is not a dictionary already set up for that word, we need to create one.
+                total_words += len(words)
                 for word in words:
                     words_per_category [category] += 1
                     if word in p_word_given_category:
@@ -71,7 +73,10 @@ def get_probabilities (csv_path, filter_stop_words, stem_words):
         for category_dict in p_word_given_category[word_dict]:
             # Add one to the count of every word in every category so that we don't end up with 0% chances
             p_word_given_category[word_dict][category_dict] += 1
-            p_word_given_category[word_dict][category_dict] /= words_per_category[category_dict]
+            if words_per_category[category_dict] == 0:
+                p_word_given_category[word_dict][category_dict] = 0
+            else:
+                p_word_given_category[word_dict][category_dict] /= words_per_category[category_dict]
 
-    return p_word_given_category, p_category, 1 / total_count
+    return p_word_given_category, p_category, 1 / total_words
 

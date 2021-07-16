@@ -22,7 +22,11 @@ def bayes(input_list, word_probability_dict, category_probability_dict, defaultP
     for category in Category:
         probability_calculation = category_probability_dict[category]
         for word in input_list:
-            probability_calculation *= word_probability_dict[category].get(word, defaultProbability)
+            word_probability = word_probability_dict.get(word, defaultProbability)
+            if isinstance(word_probability,dict):
+                probability_calculation *= word_probability[category]
+            else:
+                probability_calculation *= word_probability
 
         probability_calcs.append(probability_calculation)
 
