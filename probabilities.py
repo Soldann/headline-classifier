@@ -1,6 +1,8 @@
 import csv
+from whitelist import whitelist
 from categories import *
 from preprocess import preprocess
+import string
 
 """
 Calculates probabilities of word given category using data in the provided training set.
@@ -80,3 +82,17 @@ def get_probabilities (csv_path, filter_stop_words, stem_words):
 
     return p_word_given_category, p_category, 1 / total_words
 
+def create_whitelist_dictionary(word_dict):
+    whitelist_dict = {}
+
+    for word in word_dict:
+        if word in string.punctuation:
+            continue
+        max_prob = 0
+        for category in word_dict[word]:
+            if word_dict[word][category] >= 0.02:
+                if word_dict[word][category] > max_prob:
+                    max_prob = word_dict[word][category]
+                    whitelist_dict[word] = category
+
+    return whitelist_dict
