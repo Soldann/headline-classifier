@@ -82,7 +82,7 @@ def get_probabilities (csv_path, filter_stop_words, stem_words):
 
     return p_word_given_category, p_category, 1 / total_words
 
-def create_whitelist_dictionary(word_dict):
+def create_whitelist_dictionary(word_dict, threshold_probability=0.02):
     whitelist_dict = {}
 
     for word in word_dict:
@@ -90,7 +90,7 @@ def create_whitelist_dictionary(word_dict):
             continue
         max_prob = 0
         for category in word_dict[word]:
-            if word_dict[word][category] >= 0.02:
+            if word_dict[word][category] >= threshold_probability:
                 if word_dict[word][category] > max_prob:
                     max_prob = word_dict[word][category]
                     whitelist_dict[word] = category
