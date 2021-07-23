@@ -7,7 +7,7 @@ import string
 """
 Calculates probabilities of word given category using data in the provided training set.
 """
-def get_probabilities (csv_path, filter_stop_words, stem_words):
+def get_probabilities (data_array, filter_stop_words, stem_words):
     p_word_given_category = {}
     p_category = {}
     total_count = 0
@@ -19,52 +19,31 @@ def get_probabilities (csv_path, filter_stop_words, stem_words):
         p_category[category] = 0
         words_per_category[category] = 0
 
-    with open (csv_path, mode='r') as csv_file:
-        csv_reader = csv.reader (csv_file, delimiter=',')
-        line_count = 0
-        for row in csv_reader:
-            if line_count == 0:
-                line_count += 1
-                continue # Skip the header row
-            else:
-                line_count += 1
-                total_count += 1
-                category_string = row[1]
-                # Can't figure out how to get built-in enum-string matching to work
-                #   so I'll just do it myself
-                if (category_string == "New Releases"):
-                    category = Category.NEW_RELEASES
-                elif (category_string == "Updates"):
-                    category = Category.UPDATES
-                elif (category_string == "Reviews"):
-                    category = Category.REVIEWS
-                elif (category_string == "Commentary"):
-                    category = Category.COMMENTARY
-                elif (category_string == "Walkthroughs"):
-                    category = Category.WALKTHROUGHS
-                elif (category_string == "Announcements"):
-                    category = Category.ANNOUNCEMENTS
-                else:
-                    category = Category.RUMOURS
+    for row in data_array:
+        total_count += 1
+        category_string = row[1]
 
-                p_category[category] += 1
+        # get category enum value
+        category = Category[category_string.upper().replace(' ', '_')]
+
+        p_category[category] += 1
                 
-                headline = row[0]                
-                words = preprocess (headline, filter_stop_words, stem_words)
-                # For each word, increment the total number of words present in headlines in the category
-                # and increment the number of appearances of the particular word in the category.
-                # If there is not a dictionary already set up for that word, we need to create one.
-                total_words += len(words)
-                for word in words:
-                    words_per_category [category] += 1
-                    if word in p_word_given_category:
-                        p_word_given_category[word][category] += 1
-                    else:
-                        dict_category_to_p = {}
-                        for dict_category in Category:
-                            dict_category_to_p[dict_category] = 0
-                        p_word_given_category[word] = dict_category_to_p
-                        p_word_given_category[word][category] += 1
+        headline = row[0]                
+        words = preprocess (headline, filter_stop_words, stem_words)
+        # For each word, increment the total number of words present in headlines in the category
+        # and increment the number of appearances of the particular word in the category.
+        # If there is not a dictionary already set up for that word, we need to create one.
+        total_words += len(words)
+        for word in words:
+            words_per_category [category] += 1
+            if word in p_word_given_category:
+                p_word_given_category[word][category] += 1
+            else:
+                dict_category_to_p = {}
+                for dict_category in Category:
+                    dict_category_to_p[dict_category] = 0
+                p_word_given_category[word] = dict_category_to_p
+                p_word_given_category[word][category] += 1
 
     # Divide all the counts by totals to get probabilities
 

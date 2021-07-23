@@ -3,7 +3,9 @@ from preprocess import preprocess
 from categories import Category
 from predict import Predict
 
-predictor = Predict('training.csv',True,True)
+training_set, labels = read_data("training.csv")
+threshold = 0.0
+predictor = Predict(training_set,True,True, threshold)
 
 data, labels = read_data('Polygon Article Categorization Dataset.csv')
 

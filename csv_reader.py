@@ -31,7 +31,7 @@ def read_data(file_path: str):
         return data_array, feature_names
 
 
-def preprocess(data_array, folds_num=10):
+def preprocess_data(data_array, folds_num=10):
     """
     Divides data_array into folds_num sets for cross validation. 
     Each fold has an approximately equal number of examples.
