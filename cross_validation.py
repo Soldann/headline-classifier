@@ -1,7 +1,7 @@
 import math
 from predict import *
 
-def cross_validation(folds, labels, value_list):
+def cross_validation(folds, labels, value_list, filter_stop_words, is_whitelist):
     """
     Determines the best threshold probability value for the whitelist algorithm.
 
@@ -11,6 +11,10 @@ def cross_validation(folds, labels, value_list):
     :type folds: List[List[List[Any]]]
     :param value_list: a list of parameter values
     :type value_list: List[float]
+    :param filter_stop_words: True if filtering stop words, otherwise False
+    :type filter_stop_words: Bool
+    :param is_whitelist: True if whitelist, False if bayes
+    :type is_whitelist: Bool
     :return: training accuracy, validation accuracy, training precision, validation precision lists
     :rtype: List[float], List[float], List[float], List[float]
     """
@@ -37,9 +41,14 @@ def cross_validation(folds, labels, value_list):
 
         # get accuracy and precision for each parameter value k
         for k in range(value_count):
-            predictor = Predict(training_set, True, True, k)
-            train_acc, train_prec = predictor.test_whitelist(training_set, labels)
-            valid_acc, valid_prec = predictor.test_whitelist(validation_set, labels)
+            predictor = Predict(training_set, filter_stop_words, True, k)
+
+            if is_whitelist:
+                train_acc, train_prec = predictor.test_whitelist(training_set, labels)
+                valid_acc, valid_prec = predictor.test_whitelist(validation_set, labels)
+            else:
+                train_acc, train_prec = predictor.test_bayes(training_set, labels)
+                valid_acc, valid_prec = predictor.test_bayes(validation_set, labels)
 
             training_accuracy[k] += train_acc
             validation_accuracy[k] += valid_acc
