@@ -9,6 +9,8 @@ predictor = Predict(training_set,True,True, threshold)
 
 data, labels = read_data('Polygon Article Categorization Dataset.csv')
 
+print(predictor.bayes("Pokémon Go guide: August 2021 research tasks and breakthrough reward"))
+
 print("Bayes accuracy + precision:",predictor.test_bayes(data,labels))
 
 print("Whitelist accuracy + precision:", predictor.test_whitelist(data,labels))
